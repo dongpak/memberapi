@@ -1,0 +1,4 @@
+rootProject.name = 'memberapi'
+include 'app'
+include 'memberapilib'
+
