@@ -74,6 +74,11 @@ public class MemberApi extends BaseApi<Member> {
         addBaseCriteria(criteria);
 
         criteria.setName(nameLike);
+        criteria.setOtherName(otherNameLike);
+        criteria.setStartDate(startDateLike);
+        criteria.setEndDate(endDateLike);
+        criteria.setRegular(regularLike == null ? true : regularLike);
+
 
         if (id == null) {
             apiCaller.getMemberOf().forEach(churchId -> {

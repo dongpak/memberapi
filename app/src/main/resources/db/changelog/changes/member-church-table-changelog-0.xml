@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="0" author="dongp">
+		<createTable tableName="member_church">
+            <column name="member_id" type="uuid">
+				<constraints nullable="false" foreignKeyName="fk_member_church_member" references="member(id)"/>
+			</column>
+
+			<column name="church_id" type="uuid">
+				<constraints nullable="false" foreignKeyName="fk_member_church_church" references="church(id)"/>
+			</column>
+
+			<column name="created_date" type="timestamp">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="created_by" type="varchar(64)">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="updated_date" type="timestamp">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="updated_by" type="varchar(64)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+        <addPrimaryKey tableName="member_church" columnNames="member_id,church_id"/>
+		<rollback>
+			<dropTable tableName="member_church"/>
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>

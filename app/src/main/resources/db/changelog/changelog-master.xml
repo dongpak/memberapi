@@ -7,6 +7,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <include file="/db/changelog/changes/member-table-changelog-0.xml"/>
+    <include file="/db/changelog/changes/member-church-table-changelog-0.xml"/>
 </databaseChangeLog>
 
 

@@ -4,19 +4,22 @@
 package com.churchclerk.memberapi.model;
 
 import com.churchclerk.baseapi.model.BaseModel;
+import com.churchclerk.churchapi.model.Church;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  *
  */
 public class Member extends BaseModel {
-    private String  name;
-    private String  otherName;
-    private Date    startDate;
-    private Date    endDate;
-    private boolean regular;
+    private String      name;
+    private String      otherName;
+    private Date        startDate;
+    private Date        endDate;
+    private boolean     regular;
+    private Set<Church> churches;
 
 
     public String getName() {
@@ -59,6 +62,14 @@ public class Member extends BaseModel {
         this.regular = regular;
     }
 
+    public Set<Church> getChurches() {
+        return churches;
+    }
+
+    public void setChurches(Set<Church> churches) {
+        this.churches = churches;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,12 +80,13 @@ public class Member extends BaseModel {
                 Objects.equals(name, member.name) &&
                 Objects.equals(otherName, member.otherName) &&
                 Objects.equals(startDate, member.startDate) &&
-                Objects.equals(endDate, member.endDate);
+                Objects.equals(endDate, member.endDate) &&
+                Objects.equals(churches, member.churches);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, otherName, startDate, endDate, regular);
+        return Objects.hash(super.hashCode(), name, otherName, startDate, endDate, regular, churches);
     }
 
     /**
@@ -88,6 +100,7 @@ public class Member extends BaseModel {
         setStartDate(source.getStartDate());
         setEndDate(source.getEndDate());
         setRegular(source.isRegular());
+        source.getChurches().forEach(churches::add);
     }
 
     /**
@@ -101,5 +114,6 @@ public class Member extends BaseModel {
         copy(source.getStartDate(), this::setStartDate);
         copy(source.getEndDate(), this::setEndDate);
         copy(source.isRegular(), this::setRegular);
+        copy(source.getChurches(), this::setChurches);
     }
 }
