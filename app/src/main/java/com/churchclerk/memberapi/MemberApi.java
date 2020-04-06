@@ -44,7 +44,8 @@ public class MemberApi extends BaseApi<Member> {
 
 
     @Autowired
-    private MemberService service;
+    private MemberService       service;
+
 
     /**
      *
@@ -131,12 +132,21 @@ public class MemberApi extends BaseApi<Member> {
             throw new ForbiddenException();
         }
 
+        Date now = new Date();
         resource.setId(UUID.randomUUID().toString());
         resource.setCreatedBy(apiCaller.getUserid());
-        resource.setCreatedDate(new Date());
+        resource.setCreatedDate(now);
         resource.setUpdatedBy(apiCaller.getUserid());
-        resource.setUpdatedDate(new Date());
+        resource.setUpdatedDate(now);
 
+        if (resource.getChurches() != null) {
+            resource.getChurches().forEach(church -> {
+                church.setCreatedBy(apiCaller.getUserid());
+                church.setCreatedDate(now);
+                church.setUpdatedBy(apiCaller.getUserid());
+                church.setUpdatedDate(now);
+            });
+        }
         return service.createResource(resource);
     }
 
@@ -158,8 +168,18 @@ public class MemberApi extends BaseApi<Member> {
             throw new ForbiddenException();
         }
 
+        Date now = new Date();
         resource.setUpdatedBy(apiCaller.getUserid());
-        resource.setUpdatedDate(new Date());
+        resource.setUpdatedDate(now);
+
+        if (resource.getChurches() != null) {
+            resource.getChurches().forEach(church -> {
+                church.setCreatedBy(apiCaller.getUserid());
+                church.setCreatedDate(now);
+                church.setUpdatedBy(apiCaller.getUserid());
+                church.setUpdatedDate(now);
+            });
+        }
 
         return service.updateResource(resource);
     }

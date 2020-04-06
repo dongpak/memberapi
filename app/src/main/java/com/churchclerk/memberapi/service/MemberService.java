@@ -3,6 +3,8 @@
  */
 package com.churchclerk.memberapi.service;
 
+import com.churchclerk.churchapi.entity.ChurchEntity;
+import com.churchclerk.churchapi.model.Church;
 import com.churchclerk.memberapi.entity.MemberEntity;
 import com.churchclerk.memberapi.model.Member;
 import org.slf4j.Logger;
@@ -13,7 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.NotFoundException;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 
 /**
@@ -38,7 +43,18 @@ public class MemberService {
 
 		Page<MemberEntity> page = storage.findAll(new MemberResourceSpec(criteria), pageable);
 
+		page.forEach(this::moveChurches);
+
 		return page;
+	}
+
+	private void moveChurches(MemberEntity entity) {
+		if (entity.getChurchEntities() != null) {
+			Set<Church> set = new HashSet<Church>();
+
+			entity.getChurchEntities().forEach(set::add);
+			entity.setChurches(set);
+		}
 	}
 
 	/**
@@ -48,10 +64,14 @@ public class MemberService {
 	 */
 	public Member getResource(String id) {
 
-		Optional<MemberEntity> entity = storage.findById(id);
+		Optional<MemberEntity> optional = storage.findById(id);
 
-		checkResourceNotFound(id, entity);
-		return entity.get();
+		checkResourceNotFound(id, optional);
+
+		MemberEntity	entity = optional.get();
+
+		moveChurches(entity);
+		return entity;
 	}
 
 	private void checkResourceNotFound(String id, Optional<MemberEntity> optional) {
@@ -69,8 +89,20 @@ public class MemberService {
 		MemberEntity entity = new MemberEntity();
 
 		entity.copy(resource);
+		if (resource.getChurches() != null) {
+			entity.setChurchEntities(new HashSet<>());
+			resource.getChurches().forEach(church -> {
+				ChurchEntity ce = new ChurchEntity();
 
-		return storage.save(entity);
+				ce.copy(church);
+
+				entity.getChurchEntities().add(ce);
+			});
+		}
+		MemberEntity saved = storage.save(entity);
+		moveChurches(saved);
+
+		return saved;
 	}
 
 
@@ -87,7 +119,24 @@ public class MemberService {
 		MemberEntity entity = optional.get();
 
 		entity.copyNonNulls(resource);
-		return storage.save(entity);
+
+		if (resource.getChurches() != null) {
+			if (resource.getChurches().size() > 0) {
+				entity.getChurchEntities().clear();
+				resource.getChurches().forEach(church -> {
+					ChurchEntity ce = new ChurchEntity();
+
+					ce.copy(church);
+
+					entity.getChurchEntities().add(ce);
+				});
+			}
+		}
+
+		MemberEntity saved = storage.save(entity);
+		moveChurches(saved);
+
+		return saved;
 	}
 
 
@@ -103,6 +152,9 @@ public class MemberService {
 		checkResourceNotFound(id, optional);
 
 		storage.deleteById(id);
-		return optional.get();
+
+		MemberEntity entity = optional.get();
+		moveChurches(entity);
+		return entity;
 	}
 }

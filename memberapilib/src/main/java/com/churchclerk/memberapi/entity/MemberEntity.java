@@ -7,6 +7,7 @@ import com.churchclerk.churchapi.entity.ChurchEntity;
 import com.churchclerk.churchapi.model.Church;
 import com.churchclerk.memberapi.model.Member;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -80,13 +81,8 @@ public class MemberEntity extends Member {
 
 	public void setChurchEntities(Set<ChurchEntity> churchEntities) {
 		this.churchEntities = churchEntities;
-
-		Set<Church>	set = new HashSet<Church>();
-		churchEntities.forEach(entity -> {
-			set.add(entity);
-		});
-		setChurches(set);
 	}
+
 
 	@Transient
 	@Override
@@ -94,21 +90,25 @@ public class MemberEntity extends Member {
 		return super.getChurches();
 	}
 
+	@Column(name="created_date")
 	@Override
 	public Date getCreatedDate() {
 		return super.getCreatedDate();
 	}
 
+	@Column(name="created_by")
 	@Override
 	public String getCreatedBy() {
 		return super.getCreatedBy();
 	}
 
+	@Column(name="updated_date")
 	@Override
 	public Date getUpdatedDate() {
 		return super.getUpdatedDate();
 	}
 
+	@Column(name="updated_by")
 	@Override
 	public String getUpdatedBy() {
 		return super.getUpdatedBy();

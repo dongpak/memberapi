@@ -16,19 +16,19 @@
 				<constraints nullable="false" foreignKeyName="fk_member_church_church" references="church(id)"/>
 			</column>
 
-			<column name="created_date" type="timestamp">
+			<column name="created_date" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="created_by" type="varchar(64)">
+			<column name="created_by" type="varchar(64)" defaultValue="SYS">
+				<constraints nullable="false" />
+			</column>
+
+			<column name="updated_date" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
 				<constraints nullable="false"/>
 			</column>
 
-			<column name="updated_date" type="timestamp">
-				<constraints nullable="false"/>
-			</column>
-
-			<column name="updated_by" type="varchar(64)">
+			<column name="updated_by" type="varchar(64)" defaultValue="SYS">
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
