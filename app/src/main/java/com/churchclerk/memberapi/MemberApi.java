@@ -7,6 +7,7 @@ import com.churchclerk.baseapi.BaseApi;
 import com.churchclerk.baseapi.model.ApiCaller;
 import com.churchclerk.memberapi.model.Member;
 import com.churchclerk.memberapi.service.MemberService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,8 @@ import java.util.UUID;
  */
 @Component
 @Path("/member")
+@Slf4j
 public class MemberApi extends BaseApi<Member> {
-
-    private static Logger logger = LoggerFactory.getLogger(MemberApi.class);
 
     @QueryParam("name")
     protected String nameLike;
@@ -51,7 +51,7 @@ public class MemberApi extends BaseApi<Member> {
      *
      */
     public MemberApi() {
-        super(logger, Member.class);
+        super(Member.class);
         setReadRoles(ApiCaller.Role.ADMIN, ApiCaller.Role.CLERK, ApiCaller.Role.OFFICIAL, ApiCaller.Role.MEMBER, ApiCaller.Role.NONMEMBER);
         setCreateRoles(ApiCaller.Role.ADMIN, ApiCaller.Role.CLERK);
         setUpdateRoles(ApiCaller.Role.ADMIN, ApiCaller.Role.CLERK, ApiCaller.Role.OFFICIAL, ApiCaller.Role.MEMBER, ApiCaller.Role.NONMEMBER);
@@ -91,15 +91,15 @@ public class MemberApi extends BaseApi<Member> {
 
         if (readAllowed(id, this::hasSuperRole)) {
             if (id != null) {
-                criteria.setId(id);
+                criteria.setId(UUID.fromString(id));
             }
         }
         else {
             // force return of empty array
-            criteria.setId("NOTALLOWED");
+            criteria.setId(null);
         }
 
-        logger.info("id="+criteria.getId());
+        log.info("id="+criteria.getId());
         return criteria;
     }
 
@@ -111,7 +111,7 @@ public class MemberApi extends BaseApi<Member> {
 
         Member resource = service.getResource(id);
 
-        if ((resource == null) || (readAllowed(resource.getId()) == false)) {
+        if ((resource == null) || (readAllowed(resource.getId().toString()) == false)) {
             throw new NotFoundException();
         }
 
@@ -128,23 +128,19 @@ public class MemberApi extends BaseApi<Member> {
             throw new BadRequestException("Church's name cannot be null");
         }
 
-        if (createAllowed(resource.getId(), this::hasSuperRole) == false) {
+        if (createAllowed(null, this::hasSuperRole) == false) {
             throw new ForbiddenException();
         }
 
         Date now = new Date();
-        resource.setId(UUID.randomUUID().toString());
-        resource.setCreatedBy(apiCaller.getUserid());
-        resource.setCreatedDate(now);
-        resource.setUpdatedBy(apiCaller.getUserid());
-        resource.setUpdatedDate(now);
+        resource.setId(UUID.randomUUID());
 
         if (resource.getChurches() != null) {
             resource.getChurches().forEach(church -> {
-                church.setCreatedBy(apiCaller.getUserid());
-                church.setCreatedDate(now);
-                church.setUpdatedBy(apiCaller.getUserid());
-                church.setUpdatedDate(now);
+//                church.setCreatedBy(apiCaller.getUserid());
+//                church.setCreatedDate(now);
+//                church.setUpdatedBy(apiCaller.getUserid());
+//                church.setUpdatedDate(now);
             });
         }
         return service.createResource(resource);
@@ -152,11 +148,11 @@ public class MemberApi extends BaseApi<Member> {
 
     @Override
     protected Member doUpdate(Member resource) {
-        if ((id == null) || (id.isEmpty()) || (resource.getId() == null) || (resource.getId().isEmpty())) {
+        if ((id == null) || (id.isEmpty()) || (resource.getId() == null)) {
             throw new BadRequestException("Church id cannot be empty");
         }
 
-        if (resource.getId().equals(id) == false) {
+        if (resource.getId().toString().equals(id) == false) {
             throw new BadRequestException("Church id does not match");
         }
 
@@ -174,10 +170,10 @@ public class MemberApi extends BaseApi<Member> {
 
         if (resource.getChurches() != null) {
             resource.getChurches().forEach(church -> {
-                church.setCreatedBy(apiCaller.getUserid());
-                church.setCreatedDate(now);
-                church.setUpdatedBy(apiCaller.getUserid());
-                church.setUpdatedDate(now);
+//                church.setCreatedBy(apiCaller.getUserid());
+//                church.setCreatedDate(now);
+//                church.setUpdatedBy(apiCaller.getUserid());
+//                church.setUpdatedDate(now);
             });
         }
 

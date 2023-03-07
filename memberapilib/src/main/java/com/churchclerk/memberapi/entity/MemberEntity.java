@@ -7,12 +7,18 @@ import com.churchclerk.churchapi.entity.ChurchEntity;
 import com.churchclerk.churchapi.model.Church;
 import com.churchclerk.memberapi.model.Member;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 
 /**
@@ -22,6 +28,10 @@ import java.util.Set;
  */
 @Entity
 @Table(name="member")
+@SuperBuilder
+@NoArgsConstructor
+@Setter
+@EntityListeners(AuditingEntityListener.class)
 public class MemberEntity extends Member {
 
 	private Set<ChurchEntity> churchEntities;
@@ -35,7 +45,7 @@ public class MemberEntity extends Member {
 	@Id
 	@Column(name="id")
 	@Override
-	public String getId() {
+	public UUID getId() {
 		return super.getId();
 	}
 
@@ -78,11 +88,6 @@ public class MemberEntity extends Member {
 	public Set<ChurchEntity> getChurchEntities() {
 		return churchEntities;
 	}
-
-	public void setChurchEntities(Set<ChurchEntity> churchEntities) {
-		this.churchEntities = churchEntities;
-	}
-
 
 	@Transient
 	@Override

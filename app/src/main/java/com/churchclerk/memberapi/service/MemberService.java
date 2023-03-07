@@ -7,6 +7,7 @@ import com.churchclerk.churchapi.entity.ChurchEntity;
 import com.churchclerk.churchapi.model.Church;
 import com.churchclerk.memberapi.entity.MemberEntity;
 import com.churchclerk.memberapi.model.Member;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.NotFoundException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -27,9 +25,8 @@ import java.util.Set;
  *
  */
 @Service
+@Slf4j
 public class MemberService {
-
-	private static Logger logger	= LoggerFactory.getLogger(MemberService.class);
 
 	@Autowired
 	private MemberStorage storage;
@@ -64,7 +61,7 @@ public class MemberService {
 	 */
 	public Member getResource(String id) {
 
-		Optional<MemberEntity> optional = storage.findById(id);
+		Optional<MemberEntity> optional = storage.findById(UUID.fromString(id));
 
 		checkResourceNotFound(id, optional);
 
@@ -114,7 +111,7 @@ public class MemberService {
 	public Member updateResource(Member resource) {
 		Optional<MemberEntity> optional = storage.findById(resource.getId());
 
-		checkResourceNotFound(resource.getId(), optional);
+		checkResourceNotFound(resource.getId().toString(), optional);
 
 		MemberEntity entity = optional.get();
 
@@ -147,11 +144,11 @@ public class MemberService {
 	 * @return
 	 */
 	public Member deleteResource(String id) {
-		Optional<MemberEntity> optional = storage.findById(id);
+		Optional<MemberEntity> optional = storage.findById(UUID.fromString(id));
 
 		checkResourceNotFound(id, optional);
 
-		storage.deleteById(id);
+		storage.deleteById(UUID.fromString(id));
 
 		MemberEntity entity = optional.get();
 		moveChurches(entity);

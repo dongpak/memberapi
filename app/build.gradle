@@ -1,48 +1,15 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id "com.bmuschko.docker-remote-api" version "6.1.4"
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id "com.google.cloud.tools.jib"
+    id 'groovy'
 }
-
-import com.bmuschko.gradle.docker.tasks.container.*
-import com.bmuschko.gradle.docker.tasks.image.*
-import com.bmuschko.gradle.docker.tasks.*
-
-docker {
-    url = 'tcp://host.docker.internal:2375'
-//    url = 'unix:///var/run/docker.sock'
-//    url = 'tcp://127.0.0.1:2375'
-//    url = 'npipe:////./pipe/docker_engine'
-}
-
-task dockerInit(type: Copy) {
-    dependsOn assemble
-
-    into("$buildDir/docker")
-    from("src/docker") {
-        include '**/*.dockerfile'
-        include 'entrypoint.sh'
-    }
-    from("$buildDir/libs/") {
-        include '**/*.jar'
-    }
-}
-
-task dockerImageBuild(type: DockerBuildImage) {
-    dependsOn dockerInit
-
-    images.add('dongpak/addressapi:latest')
-    inputDir	= file("$buildDir/docker")
-    dockerFile	= file("$buildDir/docker/jdk8.dockerfile")
-    remove		= true
-}
-
 
 group 'com.churchclerk'
 version '1.0'
 
-sourceCompatibility = 1.8
+//sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -56,22 +23,27 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    implementation 'com.churchclerk:baseapilib:1.0'
-    implementation 'com.churchclerk:churchapilib:1.0'
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation libs.baseapilib
+    implementation libs.churchapilib
     implementation project(':memberapilib')
 
-    runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly libs.postgresql
     runtimeOnly 'org.liquibase:liquibase-core'
-    runtimeOnly 'com.auth0:java-jwt:3.2.0'
-    runtimeOnly 'com.churchclerk:securityapi:1.1'
+    runtimeOnly libs.java.jwt
+    runtimeOnly libs.securityapi
     runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
 
+    testImplementation libs.spock.core
+    testImplementation libs.groovy.all
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation('com.h2database:h2')
     testImplementation('com.google.code.gson:gson')
-    testImplementation('com.churchclerk:securityapi:1.1')
+    testImplementation(libs.securityapi)
 }
 
 test {
