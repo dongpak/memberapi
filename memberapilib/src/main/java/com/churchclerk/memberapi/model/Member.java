@@ -6,6 +6,7 @@ package com.churchclerk.memberapi.model;
 import com.churchclerk.baseapi.model.BaseModel;
 import com.churchclerk.churchapi.model.Church;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -16,6 +17,7 @@ import java.util.Set;
  *
  */
 @Data
+@EqualsAndHashCode(callSuper=true)
 @SuperBuilder
 @NoArgsConstructor
 public class Member extends BaseModel {
